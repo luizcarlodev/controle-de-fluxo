@@ -1,11 +1,9 @@
 {
-  "name": "Sabor Online — Controle de Parquinho",
-  "short_name": "Sabor Online",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#4C1259",
-  "theme_color": "#4C1259",
-  "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
-  ]
+    "name": "Sabor Online — Controle de Parquinho",
+    "short_name": "Sabor Online",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#4C1259",
+    "theme_color": "#4C1259",
+    "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }
