@@ -273,6 +273,27 @@
                 font-size: 0.9rem;
                 padding: 14px 4px;
             }
+            .collapse-btn {
+                margin-left: auto;
+                border: none;
+                background: var(--gray-light);
+                color: var(--acai);
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                cursor: pointer;
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.2s;
+            }
+            .collapse-btn.collapsed {
+                transform: rotate(-90deg);
+            }
+            .collapsible.hidden {
+                display: none;
+            }
 
             .client-list {
                 display: flex;
@@ -350,6 +371,24 @@
                 color: #a31468;
             }
 
+            .pay-badge {
+                font-size: 0.68rem;
+                font-weight: 800;
+                padding: 3px 9px;
+                border-radius: 999px;
+                border: none;
+                cursor: pointer;
+                margin-left: 6px;
+            }
+            .pay-badge.pendente {
+                background: #ffe9cc;
+                color: #a05a00;
+            }
+            .pay-badge.pago {
+                background: #dff5ec;
+                color: #0f8a5f;
+            }
+
             .timer-wrap {
                 text-align: center;
             }
@@ -421,7 +460,7 @@
             /* RESUMO */
             .summary-grid {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 gap: 14px;
             }
             .summary-item {
@@ -454,6 +493,12 @@
             .summary-item.total .num,
             .summary-item.total .lbl {
                 color: #fff;
+            }
+            #sum-pendente-box.has-pending {
+                background: #ffe9cc;
+            }
+            #sum-pendente-box.has-pending .num {
+                color: #a05a00;
             }
             .zerar-btn {
                 margin-top: 16px;
@@ -707,6 +752,9 @@
                 .summary-grid {
                     grid-template-columns: repeat(2, 1fr);
                 }
+                .summary-grid .summary-item.total {
+                    grid-column: 1/-1;
+                }
                 header h1 {
                     font-size: 2rem;
                 }
@@ -735,7 +783,7 @@
                         <input
                             type="text"
                             id="input-name"
-                            placeholder="Ex: Maria Isabel"
+                            placeholder="Ex: Izabel Maria"
                         />
                         <div class="field-error" id="name-error">
                             Digite o nome do cliente.
@@ -791,19 +839,39 @@
                 <div class="list-heading">
                     <h3>Ativos</h3>
                     <span class="count-pill" id="active-count">0</span>
+                    <button
+                        class="collapse-btn"
+                        id="toggle-active"
+                        data-target="active-wrap"
+                        title="Minimizar"
+                    >
+                        ▾
+                    </button>
                 </div>
-                <div class="client-list" id="active-list"></div>
-                <div class="empty-msg" id="active-empty">
-                    Nenhum cliente ativo no momento.
+                <div id="active-wrap" class="collapsible">
+                    <div class="client-list" id="active-list"></div>
+                    <div class="empty-msg" id="active-empty">
+                        Nenhum cliente ativo no momento.
+                    </div>
                 </div>
 
                 <div class="list-heading">
                     <h3>Finalizados</h3>
                     <span class="count-pill" id="finished-count">0</span>
+                    <button
+                        class="collapse-btn"
+                        id="toggle-finished"
+                        data-target="finished-wrap"
+                        title="Minimizar"
+                    >
+                        ▾
+                    </button>
                 </div>
-                <div class="client-list" id="finished-list"></div>
-                <div class="empty-msg" id="finished-empty">
-                    Ninguém finalizado ainda.
+                <div id="finished-wrap" class="collapsible">
+                    <div class="client-list" id="finished-list"></div>
+                    <div class="empty-msg" id="finished-empty">
+                        Ninguém finalizado ainda.
+                    </div>
                 </div>
             </section>
 
@@ -822,6 +890,10 @@
                     <div class="summary-item">
                         <div class="num" id="sum-5">0</div>
                         <div class="lbl">avulsas (R$5)</div>
+                    </div>
+                    <div class="summary-item" id="sum-pendente-box">
+                        <div class="num" id="sum-pendente">0</div>
+                        <div class="lbl">pendente de pagto</div>
                     </div>
                     <div class="summary-item total">
                         <div class="num" id="sum-total-value">R$ 0</div>
@@ -848,19 +920,33 @@
 
             <!-- HISTÓRICO -->
             <section class="card-block">
-                <h2 class="section-title">🗓️ Histórico de dias</h2>
-                <div id="history-list"></div>
-                <div class="empty-msg" id="history-empty">
-                    Nenhum dia zerado ainda. Assim que você "zerar o dia", o
-                    resumo fica guardado aqui.
+                <div class="list-heading" style="margin-top: 0">
+                    <h2 class="section-title" style="margin: 0">
+                        🗓️ Histórico de dias
+                    </h2>
+                    <button
+                        class="collapse-btn"
+                        id="toggle-history"
+                        data-target="history-wrap"
+                        title="Minimizar"
+                    >
+                        ▾
+                    </button>
                 </div>
-                <button
-                    class="zerar-btn"
-                    id="btn-apagar-historico"
-                    style="margin-top: 14px"
-                >
-                    Apagar todo o histórico
-                </button>
+                <div id="history-wrap" class="collapsible">
+                    <div id="history-list"></div>
+                    <div class="empty-msg" id="history-empty">
+                        Nenhum dia zerado ainda. Assim que você "zerar o dia", o
+                        resumo fica guardado aqui.
+                    </div>
+                    <button
+                        class="zerar-btn"
+                        id="btn-apagar-historico"
+                        style="margin-top: 14px"
+                    >
+                        Apagar todo o histórico
+                    </button>
+                </div>
             </section>
         </main>
 
@@ -926,8 +1012,10 @@
         <!-- MODAL: adicionar tempo / reativar -->
         <div class="overlay" id="overlay-edit">
             <div class="modal edit-modal">
-                <h3 id="edit-title">Adicionar tempo</h3>
-                <label>Quantos blocos de R$ 5,00 (10 min)?</label>
+                <h3 id="edit-title">Ajustar tempo</h3>
+                <label id="edit-label"
+                    >Quantos blocos de R$ 5,00 (10 min)?</label
+                >
                 <div class="stepper">
                     <button id="edit-minus" type="button">−</button>
                     <span class="count" id="edit-count">1×</span>
@@ -938,8 +1026,25 @@
                     <button class="cancel-btn" id="edit-cancel" type="button">
                         Cancelar
                     </button>
+                </div>
+                <div
+                    class="modal-actions"
+                    id="edit-action-row"
+                    style="margin-top: 10px"
+                >
+                    <button
+                        class="cancel-btn"
+                        id="edit-remove"
+                        type="button"
+                        style="
+                            border-color: var(--strawberry);
+                            color: var(--strawberry);
+                        "
+                    >
+                        ➖ Remover
+                    </button>
                     <button class="modal-btn" id="edit-confirm" type="button">
-                        Confirmar
+                        ➕ Adicionar
                     </button>
                 </div>
             </div>
@@ -1173,6 +1278,7 @@
                                     now + stepUnits * UNIT_MINUTES * 60 * 1000,
                                 status: "active",
                                 finishedTime: null,
+                                pago: false,
                             };
                         } else {
                             entry = {
@@ -1185,6 +1291,7 @@
                                 endTime: getClosingTime(now),
                                 status: "active",
                                 finishedTime: null,
+                                pago: false,
                             };
                         }
                         clients.push(entry);
@@ -1281,10 +1388,24 @@
                     editMode = mode;
                     editUnits = 1;
                     updateEditInfo();
-                    editTitle.textContent =
-                        mode === "reactivate"
-                            ? "Reativar cliente"
-                            : "Adicionar tempo";
+                    var removeBtn = document.getElementById("edit-remove");
+                    var label = document.getElementById("edit-label");
+                    if (mode === "reactivate") {
+                        editTitle.textContent = "Reativar cliente";
+                        label.textContent =
+                            "Quantos blocos de R$ 5,00 (10 min) adicionar?";
+                        removeBtn.style.display = "none";
+                    } else if (mode === "adjust-finished") {
+                        editTitle.textContent = "Ajustar blocos (sem reativar)";
+                        label.textContent =
+                            "Corrija a quantidade de blocos de R$ 5,00:";
+                        removeBtn.style.display = "inline-block";
+                    } else {
+                        editTitle.textContent = "Ajustar tempo";
+                        label.textContent =
+                            "Quantos blocos de R$ 5,00 (10 min)?";
+                        removeBtn.style.display = "inline-block";
+                    }
                     overlayEdit.classList.add("show");
                 }
                 document
@@ -1293,20 +1414,54 @@
                         overlayEdit.classList.remove("show");
                         editTargetId = null;
                     });
+
+                function applyEditDelta(sign) {
+                    var c = clients.find(function (x) {
+                        return x.id === editTargetId;
+                    });
+                    if (!c) return;
+
+                    var actualUnits =
+                        sign === 1
+                            ? editUnits
+                            : -Math.min(editUnits, c.units || 0);
+                    var addValue = actualUnits * UNIT_PRICE;
+                    var addMs = actualUnits * UNIT_MINUTES * 60 * 1000;
+
+                    if (editMode === "adjust-finished") {
+                        // só corrige quantidade e valor, não mexe em tempo nem status
+                        c.value = Math.max(0, c.value + addValue);
+                        c.units = Math.max(0, (c.units || 0) + actualUnits);
+                    } else {
+                        // cliente ativo: mexe em tempo, valor e blocos
+                        var now = Date.now();
+                        if (sign === 1) {
+                            var base = c.endTime > now ? c.endTime : now;
+                            c.endTime = base + addMs;
+                        } else {
+                            c.endTime = c.endTime + addMs;
+                        }
+                        c.value = Math.max(0, c.value + addValue);
+                        c.units = Math.max(0, (c.units || 0) + actualUnits);
+                    }
+                    saveData();
+                    render();
+                }
+
                 document
                     .getElementById("edit-confirm")
                     .addEventListener("click", function () {
-                        var c = clients.find(function (x) {
-                            return x.id === editTargetId;
-                        });
-                        if (c) {
-                            var addMs = editUnits * UNIT_MINUTES * 60 * 1000;
-                            var addValue = editUnits * UNIT_PRICE;
-                            var now = Date.now();
-                            if (editMode === "reactivate") {
+                        if (editMode === "reactivate") {
+                            var c = clients.find(function (x) {
+                                return x.id === editTargetId;
+                            });
+                            if (c) {
+                                var addMs =
+                                    editUnits * UNIT_MINUTES * 60 * 1000;
+                                var addValue = editUnits * UNIT_PRICE;
+                                var now = Date.now();
                                 c.status = "active";
                                 c.finishedTime = null;
-                                // base do novo tempo é agora, não o horário antigo
                                 c.endTime =
                                     c.plan === "20"
                                         ? getClosingTime(now)
@@ -1314,16 +1469,19 @@
                                 c.value += addValue;
                                 c.units = (c.units || 0) + editUnits;
                                 delete warningShownFor[c.id];
-                            } else {
-                                // adicionar tempo a um cliente ativo
-                                var base = c.endTime > now ? c.endTime : now;
-                                c.endTime = base + addMs;
-                                c.value += addValue;
-                                c.units = (c.units || 0) + editUnits;
+                                saveData();
+                                render();
                             }
-                            saveData();
-                            render();
+                        } else {
+                            applyEditDelta(1);
                         }
+                        overlayEdit.classList.remove("show");
+                        editTargetId = null;
+                    });
+                document
+                    .getElementById("edit-remove")
+                    .addEventListener("click", function () {
+                        applyEditDelta(-1);
                         overlayEdit.classList.remove("show");
                         editTargetId = null;
                     });
@@ -1491,7 +1649,13 @@
                         planPillClass +
                         '">' +
                         planLabel +
-                        "</span></div>" +
+                        '</span> <button class="pay-badge ' +
+                        (c.pago ? "pago" : "pendente") +
+                        '" data-action="toggle-pago" data-id="' +
+                        c.id +
+                        '">' +
+                        (c.pago ? "✅ Pago" : "⏳ Pendente") +
+                        "</button></div>" +
                         '<div class="meta">entrou às ' +
                         formatClock(c.entryTime) +
                         " · " +
@@ -1512,7 +1676,7 @@
                         (c.plan === "5"
                             ? '<button class="btn-small btn-edit" data-action="add" data-id="' +
                               c.id +
-                              '">+ tempo</button>'
+                              '">✎ Ajustar tempo</button>'
                             : "") +
                         '<button class="btn-small btn-end" data-action="end" data-id="' +
                         c.id +
@@ -1541,7 +1705,13 @@
                         planPillClass +
                         '">' +
                         planLabel +
-                        "</span></div>" +
+                        '</span> <button class="pay-badge ' +
+                        (c.pago ? "pago" : "pendente") +
+                        '" data-action="toggle-pago" data-id="' +
+                        c.id +
+                        '">' +
+                        (c.pago ? "✅ Pago" : "⏳ Pendente") +
+                        "</button></div>" +
                         '<div class="meta">entrou às ' +
                         formatClock(c.entryTime) +
                         " · encerrado às " +
@@ -1550,6 +1720,11 @@
                         "</div>" +
                         '<div class="timer-wrap"><span class="finished-time">encerrado</span></div>' +
                         '<div class="card-actions">' +
+                        (c.plan === "5"
+                            ? '<button class="btn-small btn-edit" data-action="adjust-finished" data-id="' +
+                              c.id +
+                              '">✎ Ajustar</button>'
+                            : "") +
                         '<button class="btn-small btn-reactivate" data-action="reactivate" data-id="' +
                         c.id +
                         '">Reativar</button>' +
@@ -1634,12 +1809,20 @@
                     var revenue = clients.reduce(function (sum, c) {
                         return sum + c.value;
                     }, 0);
+                    var pendingValue = clients.reduce(function (sum, c) {
+                        return sum + (c.pago ? 0 : c.value);
+                    }, 0);
 
                     document.getElementById("sum-total").textContent = total;
                     document.getElementById("sum-20").textContent = count20;
                     document.getElementById("sum-5").textContent = count5;
                     document.getElementById("sum-total-value").textContent =
                         money(revenue);
+                    document.getElementById("sum-pendente").textContent =
+                        money(pendingValue);
+                    document
+                        .getElementById("sum-pendente-box")
+                        .classList.toggle("has-pending", pendingValue > 0);
 
                     renderHistory();
                     saveData();
@@ -1693,8 +1876,19 @@
                     if (action === "add") openEditModal(id, "add");
                     else if (action === "reactivate")
                         openEditModal(id, "reactivate");
+                    else if (action === "adjust-finished")
+                        openEditModal(id, "adjust-finished");
                     else if (action === "end") endClientNow(id);
-                    else if (action === "del-history") {
+                    else if (action === "toggle-pago") {
+                        var cp = clients.find(function (x) {
+                            return x.id === id;
+                        });
+                        if (cp) {
+                            cp.pago = !cp.pago;
+                            saveData();
+                            render();
+                        }
+                    } else if (action === "del-history") {
                         var dateVal = parseInt(
                             btn.getAttribute("data-date"),
                             10,
@@ -1771,6 +1965,7 @@
                                     c.plan === "20" ? "noite_toda" : "avulsa",
                                 blocosPagos: c.units,
                                 valorPago: c.value,
+                                pago: !!c.pago,
                                 dataEntrada: formatFullDateTime(c.entryTime),
                                 horarioEntradaMs: c.entryTime,
                                 dataTermino: formatFullDateTime(c.endTime),
@@ -1845,6 +2040,7 @@
                                                 : "5",
                                         units: item.blocosPagos,
                                         value: item.valorPago,
+                                        pago: !!item.pago,
                                         entryTime: item.horarioEntradaMs,
                                         endTime: item.horarioTerminoMs,
                                         status:
@@ -1932,6 +2128,42 @@
                 tick();
                 setInterval(tick, 1000);
                 requestWakeLock();
+
+                // ---------- Minimizar seções ----------
+                var COLLAPSE_KEY = "saborOnline_collapse_v1";
+                var collapseState = {};
+                try {
+                    var rawCollapse = localStorage.getItem(COLLAPSE_KEY);
+                    collapseState = rawCollapse ? JSON.parse(rawCollapse) : {};
+                } catch (e) {
+                    collapseState = {};
+                }
+
+                function applyCollapseState() {
+                    document
+                        .querySelectorAll(".collapse-btn")
+                        .forEach(function (btn) {
+                            var targetId = btn.getAttribute("data-target");
+                            var target = document.getElementById(targetId);
+                            var isCollapsed = !!collapseState[targetId];
+                            target.classList.toggle("hidden", isCollapsed);
+                            btn.classList.toggle("collapsed", isCollapsed);
+                        });
+                }
+                document
+                    .querySelectorAll(".collapse-btn")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function () {
+                            var targetId = btn.getAttribute("data-target");
+                            collapseState[targetId] = !collapseState[targetId];
+                            localStorage.setItem(
+                                COLLAPSE_KEY,
+                                JSON.stringify(collapseState),
+                            );
+                            applyCollapseState();
+                        });
+                    });
+                applyCollapseState();
             })();
         </script>
     </body>
