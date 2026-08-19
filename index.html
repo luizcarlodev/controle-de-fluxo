@@ -347,28 +347,32 @@
             .finished .id-badge {
                 background: var(--gray);
             }
+            .client-info {
+                min-width: 0;
+                overflow: hidden;
+            }
             .client-info .name {
                 font-weight: 800;
                 font-size: 1.05rem;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .name-text {
+                flex: 1 1 auto;
+                min-width: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
             .client-info .meta {
                 font-size: 0.78rem;
-                color: #7a6987;
-                font-weight: 700;
+                color: #8b7c97;
+                font-weight: 600;
                 margin-top: 2px;
-            }
-            .plan-pill {
-                font-size: 0.68rem;
-                font-weight: 800;
-                padding: 2px 8px;
-                border-radius: 999px;
-                background: #fff7df;
-                color: #8a6a00;
-                margin-left: 6px;
-            }
-            .plan-pill.noite {
-                background: #ffe3f1;
-                color: #a31468;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             .pay-badge {
@@ -379,6 +383,8 @@
                 border: none;
                 cursor: pointer;
                 margin-left: 6px;
+                flex: none;
+                white-space: nowrap;
             }
             .pay-badge.pendente {
                 background: #ffe9cc;
@@ -426,7 +432,7 @@
 
             .card-actions {
                 display: flex;
-                flex-direction: column;
+                align-items: center;
                 gap: 6px;
             }
             .btn-small {
@@ -449,6 +455,55 @@
             .btn-reactivate {
                 background: var(--mint);
                 color: #fff;
+            }
+            .btn-delete {
+                background: #fff;
+                border: 2px solid var(--strawberry);
+                color: var(--strawberry);
+            }
+            .btn-menu {
+                background: #fff;
+                border: 2px solid var(--gray-light);
+                color: #7a6987;
+                width: 34px;
+                height: 34px;
+                padding: 0;
+                border-radius: 10px;
+                font-size: 1rem;
+                line-height: 1;
+            }
+            .dropdown-menu {
+                display: none;
+                position: fixed;
+                background: #fff;
+                border: 1px solid var(--gray-light);
+                border-radius: 12px;
+                box-shadow: 0 10px 24px -10px rgba(75, 31, 99, 0.4);
+                overflow: hidden;
+                z-index: 100;
+                min-width: 170px;
+            }
+            .dropdown-menu.show {
+                display: block;
+            }
+            .dropdown-menu button {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 11px 14px;
+                border: none;
+                background: none;
+                font-weight: 700;
+                font-size: 0.82rem;
+                color: var(--ink);
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .dropdown-menu button:hover {
+                background: var(--cream);
+            }
+            .dropdown-menu button.danger {
+                color: var(--strawberry);
             }
             .finished-time {
                 font-family: "JetBrains Mono", monospace;
@@ -636,6 +691,39 @@
                 font-size: 0.9rem;
             }
 
+            .search-row {
+                display: flex;
+                gap: 8px;
+                align-items: stretch;
+            }
+            .search-row .search-box {
+                flex: 1;
+                margin-bottom: 0;
+            }
+            .filter-toggle {
+                flex: none;
+                width: 44px;
+                height: 44px;
+                padding: 0;
+                border-radius: 14px;
+                border: 2px solid var(--gray-light);
+                background: var(--cream);
+                font-size: 1.15rem;
+                line-height: 1;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .filter-toggle.state-pago {
+                border-color: var(--mint);
+                background: #dff5ec;
+            }
+            .filter-toggle.state-pendente {
+                border-color: var(--yellow);
+                background: #ffe9cc;
+            }
+
             .name-edit-btn {
                 border: none;
                 background: none;
@@ -643,6 +731,13 @@
                 color: #9c8ca8;
                 font-size: 0.85rem;
                 margin-left: 2px;
+                flex: none;
+                opacity: 0.55;
+                transition: opacity 0.15s;
+            }
+            .name-edit-btn:hover,
+            .name-edit-btn:focus {
+                opacity: 1;
             }
 
             /* HISTÓRICO */
@@ -828,12 +923,22 @@
             <section class="card-block">
                 <h2 class="section-title">🍦 Fluxo de clientes</h2>
 
-                <div class="search-box">
-                    <input
-                        type="text"
-                        id="input-search"
-                        placeholder="Buscar cliente pelo nome..."
-                    />
+                <div class="search-row">
+                    <div class="search-box">
+                        <input
+                            type="text"
+                            id="input-search"
+                            placeholder="Buscar cliente pelo nome..."
+                        />
+                    </div>
+                    <button
+                        class="filter-toggle"
+                        id="pay-filter-toggle"
+                        title="Filtrar por pagamento: Todos"
+                        type="button"
+                    >
+                        👥
+                    </button>
                 </div>
 
                 <div class="list-heading">
@@ -900,14 +1005,30 @@
                         <div class="lbl">faturamento</div>
                     </div>
                 </div>
-                <button class="zerar-btn" id="btn-zerar">Zerar dia</button>
-
-                <div class="backup-actions">
-                    <button class="backup-btn" id="btn-backup-export">
-                        ⬇️ Baixar backup
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-top: 16px;
+                    "
+                >
+                    <button
+                        class="zerar-btn"
+                        id="btn-zerar"
+                        style="margin-top: 0; flex: 1"
+                    >
+                        Zerar dia
                     </button>
-                    <button class="backup-btn" id="btn-backup-import">
-                        ⬆️ Importar backup
+                    <button
+                        class="btn-small btn-menu"
+                        data-action="toggle-menu"
+                        data-id="0"
+                        data-type="resumo"
+                        title="Mais opções"
+                        style="width: 44px; height: 44px; font-size: 1.2rem"
+                    >
+                        ⋮
                     </button>
                 </div>
                 <input
@@ -971,6 +1092,9 @@
             </div>
         </footer>
 
+        <!-- Menu flutuante de ações (único, reaproveitado por cartões e resumo) -->
+        <div class="dropdown-menu" id="global-menu"></div>
+
         <!-- MODAL: aviso de tempo esgotado -->
         <div class="overlay" id="overlay-warning">
             <div class="modal">
@@ -1003,6 +1127,27 @@
                         Cancelar
                     </button>
                     <button class="modal-btn" id="pin-confirm" type="button">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: confirmação simples (bonita, no lugar do alerta feio do navegador) -->
+        <div class="overlay" id="overlay-confirm">
+            <div class="modal">
+                <div class="modal-icon" id="confirm-icon">❓</div>
+                <h3 id="confirm-title">Confirmar</h3>
+                <p id="confirm-message">Tem certeza?</p>
+                <div class="modal-actions">
+                    <button
+                        class="cancel-btn"
+                        id="confirm-cancel"
+                        type="button"
+                    >
+                        Cancelar
+                    </button>
+                    <button class="modal-btn" id="confirm-ok" type="button">
                         Confirmar
                     </button>
                 </div>
@@ -1072,6 +1217,18 @@
                 var WARN_THRESHOLD_MS = 10 * 60 * 1000; // fica "amarelo" faltando 10min
                 var CRIT_THRESHOLD_MS = 2 * 60 * 1000; // fica "crítico" faltando 2min
 
+                // Ícone customizado (lixeira) usado no modal de confirmação de "Encerrar"
+                var ICON_END_SVG =
+                    '<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">' +
+                    '<circle cx="28" cy="28" r="28" fill="#4C1259"/>' +
+                    '<rect x="23" y="10" width="10" height="5" rx="2" fill="#F7C948"/>' +
+                    '<rect x="15" y="15" width="26" height="5" rx="2.5" fill="#F7C948"/>' +
+                    '<path d="M18 22 L38 22 L35.5 43 C35.3 44.5 34 45.5 32.5 45.5 L23.5 45.5 C22 45.5 20.7 44.5 20.5 43 Z" fill="#EE2A8C"/>' +
+                    '<line x1="24" y1="27" x2="24" y2="40" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>' +
+                    '<line x1="28" y1="27" x2="28" y2="40" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>' +
+                    '<line x1="32" y1="27" x2="32" y2="40" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>' +
+                    "</svg>";
+
                 var clients = [];
                 var nextId = 1;
                 var history = [];
@@ -1083,6 +1240,7 @@
                 var warningQueue = [];
                 var warningShownFor = {}; // ids já com modal exibido
                 var searchTerm = "";
+                var payFilter = "all";
 
                 // ---------- Persistência ----------
                 function loadData() {
@@ -1486,17 +1644,70 @@
                         editTargetId = null;
                     });
 
-                // ---------- Encerrar manualmente ----------
+                // ---------- Modal de confirmação (genérico, mais bonito) ----------
+                var overlayConfirm = document.getElementById("overlay-confirm");
+                var confirmTitle = document.getElementById("confirm-title");
+                var confirmMessage = document.getElementById("confirm-message");
+                var confirmIcon = document.getElementById("confirm-icon");
+                var pendingConfirmCallback = null;
+
+                function openConfirmModal(icon, title, message, onConfirm) {
+                    confirmIcon.innerHTML = icon;
+                    confirmTitle.textContent = title;
+                    confirmMessage.textContent = message;
+                    pendingConfirmCallback = onConfirm;
+                    overlayConfirm.classList.add("show");
+                }
+                document
+                    .getElementById("confirm-cancel")
+                    .addEventListener("click", function () {
+                        overlayConfirm.classList.remove("show");
+                        pendingConfirmCallback = null;
+                    });
+                document
+                    .getElementById("confirm-ok")
+                    .addEventListener("click", function () {
+                        var cb = pendingConfirmCallback;
+                        overlayConfirm.classList.remove("show");
+                        pendingConfirmCallback = null;
+                        if (cb) cb();
+                    });
+
+                // ---------- Encerrar manualmente (confirmação simples) ----------
                 function endClientNow(id) {
                     var c = clients.find(function (x) {
                         return x.id === id;
                     });
-                    if (c) {
-                        c.status = "finished";
-                        c.finishedTime = Date.now();
-                        saveData();
-                        render();
-                    }
+                    if (!c) return;
+                    openConfirmModal(
+                        ICON_END_SVG,
+                        "Encerrar cliente?",
+                        'Encerrar "' +
+                            c.name +
+                            '" agora? O tempo dele ainda não acabou.',
+                        function () {
+                            c.status = "finished";
+                            c.finishedTime = Date.now();
+                            saveData();
+                            render();
+                        },
+                    );
+                }
+
+                // ---------- Apagar cliente (com PIN, ação irreversível) ----------
+                function deleteClientNow(id) {
+                    var c = clients.find(function (x) {
+                        return x.id === id;
+                    });
+                    if (!c) return;
+                    openPinModal(
+                        "apagarCliente",
+                        id,
+                        "Confirmar com PIN",
+                        'Digite o PIN pra apagar "' +
+                            c.name +
+                            '" definitivamente. Essa ação não pode ser desfeita.',
+                    );
                 }
 
                 // ---------- PIN genérico (usado em zerar dia e apagar histórico) ----------
@@ -1564,6 +1775,12 @@
                         history = [];
                         saveData();
                         render();
+                    } else if (pendingPinAction === "apagarCliente") {
+                        clients = clients.filter(function (c) {
+                            return c.id !== pendingPinTarget;
+                        });
+                        saveData();
+                        render();
                     }
                     overlayPin.classList.remove("show");
                     pendingPinAction = null;
@@ -1625,14 +1842,14 @@
                     else if (remaining <= WARN_THRESHOLD_MS)
                         statusClass = "warning";
 
-                    var planPillClass =
-                        c.plan === "20" ? "plan-pill noite" : "plan-pill";
                     var planLabel =
                         c.plan === "20" ? "noite toda" : money(c.value);
-                    var endLabel =
-                        c.plan === "20"
-                            ? "até " + formatClock(c.endTime)
-                            : "até " + formatClock(c.endTime);
+                    var metaLine =
+                        planLabel +
+                        " · " +
+                        formatClock(c.entryTime) +
+                        " → " +
+                        formatClock(c.endTime);
 
                     var div = document.createElement("div");
                     div.className = "client-card " + statusClass;
@@ -1642,24 +1859,23 @@
                         "</div>" +
                         '<div class="client-info">' +
                         '<div class="name">' +
+                        '<span class="name-text" title="' +
                         escapeHtml(c.name) +
-                        ' <button class="name-edit-btn" data-action="rename" data-id="' +
-                        c.id +
-                        '" title="Editar nome">✎</button> <span class="' +
-                        planPillClass +
                         '">' +
-                        planLabel +
-                        '</span> <button class="pay-badge ' +
+                        escapeHtml(c.name) +
+                        "</span> " +
+                        '<button class="name-edit-btn" data-action="rename" data-id="' +
+                        c.id +
+                        '" title="Editar nome">✎</button> ' +
+                        '<button class="pay-badge ' +
                         (c.pago ? "pago" : "pendente") +
                         '" data-action="toggle-pago" data-id="' +
                         c.id +
                         '">' +
                         (c.pago ? "✅ Pago" : "⏳ Pendente") +
                         "</button></div>" +
-                        '<div class="meta">entrou às ' +
-                        formatClock(c.entryTime) +
-                        " · " +
-                        endLabel +
+                        '<div class="meta">' +
+                        metaLine +
                         "</div>" +
                         "</div>" +
                         '<div class="timer-wrap">' +
@@ -1673,14 +1889,14 @@
                         '%"></div></div>' +
                         "</div>" +
                         '<div class="card-actions">' +
-                        (c.plan === "5"
-                            ? '<button class="btn-small btn-edit" data-action="add" data-id="' +
-                              c.id +
-                              '">✎ Ajustar tempo</button>'
-                            : "") +
                         '<button class="btn-small btn-end" data-action="end" data-id="' +
                         c.id +
                         '">Encerrar</button>' +
+                        '<button class="btn-small btn-menu" data-action="toggle-menu" data-id="' +
+                        c.id +
+                        '" data-type="active" data-plan="' +
+                        c.plan +
+                        '" title="Mais ações">⋮</button>' +
                         "</div>";
                     return div;
                 }
@@ -1688,46 +1904,49 @@
                 function buildFinishedCard(c) {
                     var div = document.createElement("div");
                     div.className = "client-card finished";
-                    var planPillClass =
-                        c.plan === "20" ? "plan-pill noite" : "plan-pill";
                     var planLabel =
                         c.plan === "20" ? "noite toda" : money(c.value);
+                    var metaLine =
+                        planLabel +
+                        " · " +
+                        formatClock(c.entryTime) +
+                        " → " +
+                        formatClock(c.finishedTime);
                     div.innerHTML =
                         '<div class="id-badge">#' +
                         String(c.id).padStart(2, "0") +
                         "</div>" +
                         '<div class="client-info">' +
                         '<div class="name">' +
+                        '<span class="name-text" title="' +
                         escapeHtml(c.name) +
-                        ' <button class="name-edit-btn" data-action="rename" data-id="' +
-                        c.id +
-                        '" title="Editar nome">✎</button> <span class="' +
-                        planPillClass +
                         '">' +
-                        planLabel +
-                        '</span> <button class="pay-badge ' +
+                        escapeHtml(c.name) +
+                        "</span> " +
+                        '<button class="name-edit-btn" data-action="rename" data-id="' +
+                        c.id +
+                        '" title="Editar nome">✎</button> ' +
+                        '<button class="pay-badge ' +
                         (c.pago ? "pago" : "pendente") +
                         '" data-action="toggle-pago" data-id="' +
                         c.id +
                         '">' +
                         (c.pago ? "✅ Pago" : "⏳ Pendente") +
                         "</button></div>" +
-                        '<div class="meta">entrou às ' +
-                        formatClock(c.entryTime) +
-                        " · encerrado às " +
-                        formatClock(c.finishedTime) +
+                        '<div class="meta">' +
+                        metaLine +
                         "</div>" +
                         "</div>" +
                         '<div class="timer-wrap"><span class="finished-time">encerrado</span></div>' +
                         '<div class="card-actions">' +
-                        (c.plan === "5"
-                            ? '<button class="btn-small btn-edit" data-action="adjust-finished" data-id="' +
-                              c.id +
-                              '">✎ Ajustar</button>'
-                            : "") +
                         '<button class="btn-small btn-reactivate" data-action="reactivate" data-id="' +
                         c.id +
                         '">Reativar</button>' +
+                        '<button class="btn-small btn-menu" data-action="toggle-menu" data-id="' +
+                        c.id +
+                        '" data-type="finished" data-plan="' +
+                        c.plan +
+                        '" title="Mais ações">⋮</button>' +
                         "</div>";
                     return div;
                 }
@@ -1766,6 +1985,15 @@
                             return (
                                 c.name.toLowerCase().indexOf(searchTerm) !== -1
                             );
+                        });
+                    }
+
+                    if (payFilter !== "all") {
+                        actives = actives.filter(function (c) {
+                            return payFilter === "pago" ? c.pago : !c.pago;
+                        });
+                        finished = finished.filter(function (c) {
+                            return payFilter === "pago" ? c.pago : !c.pago;
                         });
                     }
 
@@ -1826,6 +2054,7 @@
 
                     renderHistory();
                     saveData();
+                    repositionOrCloseMenu();
                 }
 
                 function renderHistory() {
@@ -1867,18 +2096,129 @@
                     });
                 }
 
+                // ---------- Menu "⋮" de ações (único, flutuante) ----------
+                var globalMenu = document.getElementById("global-menu");
+                var openMenuId = null;
+
+                function closeMenu() {
+                    openMenuId = null;
+                    globalMenu.classList.remove("show");
+                }
+
+                function buildMenuItems(type, plan, id) {
+                    if (type === "resumo") {
+                        return (
+                            '<button data-action="backup-export">⬇️ Baixar backup</button>' +
+                            '<button data-action="backup-import">⬆️ Importar backup</button>'
+                        );
+                    }
+                    var html = "";
+                    if (type === "active" && plan === "5") {
+                        html +=
+                            '<button data-action="add" data-id="' +
+                            id +
+                            '">✎ Ajustar tempo</button>';
+                    }
+                    if (type === "finished" && plan === "5") {
+                        html +=
+                            '<button data-action="adjust-finished" data-id="' +
+                            id +
+                            '">✎ Ajustar</button>';
+                    }
+                    html +=
+                        '<button data-action="delete" data-id="' +
+                        id +
+                        '" class="danger">🗑️ Apagar</button>';
+                    return html;
+                }
+
+                function openMenuFor(btn, id, type, plan) {
+                    openMenuId = id;
+                    globalMenu.innerHTML = buildMenuItems(type, plan, id);
+                    globalMenu.classList.add("show");
+
+                    var rect = btn.getBoundingClientRect();
+                    var top = rect.bottom + 6;
+                    if (top + 90 > window.innerHeight) {
+                        top = rect.top - 6 - globalMenu.offsetHeight;
+                    }
+                    globalMenu.style.top = top + "px";
+                    globalMenu.style.right =
+                        window.innerWidth - rect.right + "px";
+                    globalMenu.style.left = "auto";
+                }
+
+                function repositionOrCloseMenu() {
+                    if (openMenuId === null) return;
+                    var btn = document.querySelector(
+                        '.btn-menu[data-id="' + openMenuId + '"]',
+                    );
+                    if (!btn) {
+                        closeMenu();
+                        return;
+                    }
+                    var rect = btn.getBoundingClientRect();
+                    var top = rect.bottom + 6;
+                    if (top + 90 > window.innerHeight) {
+                        top = rect.top - 6 - globalMenu.offsetHeight;
+                    }
+                    globalMenu.style.top = top + "px";
+                    globalMenu.style.right =
+                        window.innerWidth - rect.right + "px";
+                    globalMenu.style.left = "auto";
+                }
+
+                document.addEventListener("click", function (e) {
+                    if (
+                        openMenuId !== null &&
+                        !e.target.closest("#global-menu") &&
+                        !e.target.closest(".btn-menu")
+                    ) {
+                        closeMenu();
+                    }
+                });
+                window.addEventListener(
+                    "scroll",
+                    function () {
+                        if (openMenuId !== null) closeMenu();
+                    },
+                    true,
+                );
+                window.addEventListener("resize", function () {
+                    if (openMenuId !== null) closeMenu();
+                });
+
                 // ---------- Delegação de eventos nas listas ----------
                 document.addEventListener("click", function (e) {
                     var btn = e.target.closest("button[data-action]");
                     if (!btn) return;
                     var id = parseInt(btn.getAttribute("data-id"), 10);
                     var action = btn.getAttribute("data-action");
+
+                    if (action === "toggle-menu") {
+                        if (openMenuId === id) {
+                            closeMenu();
+                        } else {
+                            openMenuFor(
+                                btn,
+                                id,
+                                btn.getAttribute("data-type"),
+                                btn.getAttribute("data-plan"),
+                            );
+                        }
+                        return;
+                    }
+                    if (openMenuId !== null) closeMenu();
+
                     if (action === "add") openEditModal(id, "add");
                     else if (action === "reactivate")
                         openEditModal(id, "reactivate");
                     else if (action === "adjust-finished")
                         openEditModal(id, "adjust-finished");
                     else if (action === "end") endClientNow(id);
+                    else if (action === "delete") deleteClientNow(id);
+                    else if (action === "backup-export") triggerBackupExport();
+                    else if (action === "backup-import") triggerBackupImport();
                     else if (action === "toggle-pago") {
                         var cp = clients.find(function (x) {
                             return x.id === id;
@@ -1937,6 +2277,42 @@
                         render();
                     });
 
+                // ---------- Filtro de status de pagamento (quadrado fixo, alterna ícone) ----------
+                var payFilterOrder = ["all", "pago", "pendente"];
+                var payFilterIcons = {
+                    all: "👥",
+                    pago: "✅",
+                    pendente: "⏳",
+                };
+                var payFilterLabels = {
+                    all: "Todos",
+                    pago: "Pagos",
+                    pendente: "Pendentes",
+                };
+                var filterToggleBtn =
+                    document.getElementById("pay-filter-toggle");
+
+                function updateFilterToggleUI() {
+                    filterToggleBtn.textContent = payFilterIcons[payFilter];
+                    filterToggleBtn.title =
+                        "Filtrar por pagamento: " + payFilterLabels[payFilter];
+                    filterToggleBtn.className =
+                        "filter-toggle" +
+                        (payFilter === "pago"
+                            ? " state-pago"
+                            : payFilter === "pendente"
+                              ? " state-pendente"
+                              : "");
+                }
+                filterToggleBtn.addEventListener("click", function () {
+                    var idx = payFilterOrder.indexOf(payFilter);
+                    payFilter =
+                        payFilterOrder[(idx + 1) % payFilterOrder.length];
+                    updateFilterToggleUI();
+                    render();
+                });
+                updateFilterToggleUI();
+
                 // ---------- Backup: exportar ----------
                 function formatFullDateTime(ts) {
                     if (!ts) return null;
@@ -1954,150 +2330,168 @@
                     if (s === "awaiting") return "aguardando confirmação";
                     return "ativo";
                 }
-                document
-                    .getElementById("btn-backup-export")
-                    .addEventListener("click", function () {
-                        var clientesExport = clients.map(function (c) {
-                            return {
-                                id: c.id,
-                                nome: c.name,
-                                tipoEntrada:
-                                    c.plan === "20" ? "noite_toda" : "avulsa",
-                                blocosPagos: c.units,
-                                valorPago: c.value,
-                                pago: !!c.pago,
-                                dataEntrada: formatFullDateTime(c.entryTime),
-                                horarioEntradaMs: c.entryTime,
-                                dataTermino: formatFullDateTime(c.endTime),
-                                horarioTerminoMs: c.endTime,
-                                status: statusLegivel(c.status),
-                                dataEncerramento: formatFullDateTime(
-                                    c.finishedTime,
-                                ),
-                                horarioEncerramentoMs: c.finishedTime,
-                            };
-                        });
-                        var historicoExport = history.map(function (h) {
-                            return {
-                                data: formatFullDateTime(h.date),
-                                dataMs: h.date,
-                                totalClientes: h.total,
-                                vendasNoiteToda: h.count20,
-                                vendasAvulsas: h.count5,
-                                faturamento: h.revenue,
-                            };
-                        });
-                        var payload = {
-                            exportadoEm: formatFullDateTime(Date.now()),
-                            proximoId: nextId,
-                            clientes: clientesExport,
-                            historico: historicoExport,
+                function triggerBackupExport() {
+                    var clientesExport = clients.map(function (c) {
+                        return {
+                            id: c.id,
+                            nome: c.name,
+                            tipoEntrada:
+                                c.plan === "20" ? "noite_toda" : "avulsa",
+                            blocosPagos: c.units,
+                            valorPago: c.value,
+                            pago: !!c.pago,
+                            dataEntrada: formatFullDateTime(c.entryTime),
+                            horarioEntradaMs: c.entryTime,
+                            dataTermino: formatFullDateTime(c.endTime),
+                            horarioTerminoMs: c.endTime,
+                            status: statusLegivel(c.status),
+                            dataEncerramento: formatFullDateTime(
+                                c.finishedTime,
+                            ),
+                            horarioEncerramentoMs: c.finishedTime,
                         };
-                        var blob = new Blob(
-                            [JSON.stringify(payload, null, 2)],
-                            { type: "application/json" },
-                        );
-                        var url = URL.createObjectURL(blob);
-                        var a = document.createElement("a");
-                        var dateStr = new Date().toISOString().slice(0, 10);
-                        a.href = url;
-                        a.download = "sabor-online-backup-" + dateStr + ".json";
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
                     });
+                    var historicoExport = history.map(function (h) {
+                        return {
+                            data: formatFullDateTime(h.date),
+                            dataMs: h.date,
+                            totalClientes: h.total,
+                            vendasNoiteToda: h.count20,
+                            vendasAvulsas: h.count5,
+                            faturamento: h.revenue,
+                        };
+                    });
+                    var payload = {
+                        exportadoEm: formatFullDateTime(Date.now()),
+                        proximoId: nextId,
+                        clientes: clientesExport,
+                        historico: historicoExport,
+                    };
+                    var blob = new Blob([JSON.stringify(payload, null, 2)], {
+                        type: "application/json",
+                    });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    var dateStr = new Date().toISOString().slice(0, 10);
+                    a.href = url;
+                    a.download = "sabor-online-backup-" + dateStr + ".json";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
 
                 // ---------- Backup: importar ----------
                 var backupFileInput =
                     document.getElementById("backup-file-input");
-                document
-                    .getElementById("btn-backup-import")
-                    .addEventListener("click", function () {
-                        backupFileInput.click();
-                    });
+                function triggerBackupImport() {
+                    backupFileInput.click();
+                }
                 backupFileInput.addEventListener("change", function (e) {
                     var file = e.target.files[0];
                     if (!file) return;
                     var reader = new FileReader();
                     reader.onload = function (ev) {
+                        var data;
                         try {
-                            var data = JSON.parse(ev.target.result);
-                            var ok = window.confirm(
-                                "Importar esse backup vai substituir os dados atuais. Continuar?",
-                            );
-                            if (!ok) return;
-
-                            if (Array.isArray(data.clientes)) {
-                                // formato novo (em português)
-                                clients = data.clientes.map(function (item) {
-                                    return {
-                                        id: item.id,
-                                        name: item.nome,
-                                        plan:
-                                            item.tipoEntrada === "noite_toda"
-                                                ? "20"
-                                                : "5",
-                                        units: item.blocosPagos,
-                                        value: item.valorPago,
-                                        pago: !!item.pago,
-                                        entryTime: item.horarioEntradaMs,
-                                        endTime: item.horarioTerminoMs,
-                                        status:
-                                            item.status === "finalizado"
-                                                ? "finished"
-                                                : item.status ===
-                                                    "aguardando confirmação"
-                                                  ? "awaiting"
-                                                  : "active",
-                                        finishedTime:
-                                            item.horarioEncerramentoMs || null,
-                                    };
-                                });
-                                nextId =
-                                    typeof data.proximoId === "number"
-                                        ? data.proximoId
-                                        : clients.length
-                                          ? Math.max.apply(
-                                                null,
-                                                clients.map(function (c) {
-                                                    return c.id;
-                                                }),
-                                            ) + 1
-                                          : 1;
-                                history = Array.isArray(data.historico)
-                                    ? data.historico.map(function (h) {
-                                          return {
-                                              date: h.dataMs,
-                                              total: h.totalClientes,
-                                              count20: h.vendasNoiteToda,
-                                              count5: h.vendasAvulsas,
-                                              revenue: h.faturamento,
-                                          };
-                                      })
-                                    : [];
-                            } else {
-                                // formato antigo (compatibilidade com backups feitos antes desta atualização)
-                                clients = Array.isArray(data.clients)
-                                    ? data.clients
-                                    : [];
-                                nextId =
-                                    typeof data.nextId === "number"
-                                        ? data.nextId
-                                        : 1;
-                                history = Array.isArray(data.history)
-                                    ? data.history
-                                    : [];
-                            }
-
-                            saveData();
-                            render();
-                            window.alert("Backup importado com sucesso!");
+                            data = JSON.parse(ev.target.result);
                         } catch (err) {
                             window.alert(
                                 "Não consegui ler esse arquivo. Confira se é um backup válido do Sabor Online.",
                             );
+                            return;
                         }
+
+                        openConfirmModal(
+                            "📥",
+                            "Importar backup?",
+                            "Importar esse backup vai substituir os dados atuais. Continuar?",
+                            function () {
+                                try {
+                                    if (Array.isArray(data.clientes)) {
+                                        // formato novo (em português)
+                                        clients = data.clientes.map(
+                                            function (item) {
+                                                return {
+                                                    id: item.id,
+                                                    name: item.nome,
+                                                    plan:
+                                                        item.tipoEntrada ===
+                                                        "noite_toda"
+                                                            ? "20"
+                                                            : "5",
+                                                    units: item.blocosPagos,
+                                                    value: item.valorPago,
+                                                    pago: !!item.pago,
+                                                    entryTime:
+                                                        item.horarioEntradaMs,
+                                                    endTime:
+                                                        item.horarioTerminoMs,
+                                                    status:
+                                                        item.status ===
+                                                        "finalizado"
+                                                            ? "finished"
+                                                            : item.status ===
+                                                                "aguardando confirmação"
+                                                              ? "awaiting"
+                                                              : "active",
+                                                    finishedTime:
+                                                        item.horarioEncerramentoMs ||
+                                                        null,
+                                                };
+                                            },
+                                        );
+                                        nextId =
+                                            typeof data.proximoId === "number"
+                                                ? data.proximoId
+                                                : clients.length
+                                                  ? Math.max.apply(
+                                                        null,
+                                                        clients.map(
+                                                            function (c) {
+                                                                return c.id;
+                                                            },
+                                                        ),
+                                                    ) + 1
+                                                  : 1;
+                                        history = Array.isArray(data.historico)
+                                            ? data.historico.map(function (h) {
+                                                  return {
+                                                      date: h.dataMs,
+                                                      total: h.totalClientes,
+                                                      count20:
+                                                          h.vendasNoiteToda,
+                                                      count5: h.vendasAvulsas,
+                                                      revenue: h.faturamento,
+                                                  };
+                                              })
+                                            : [];
+                                    } else {
+                                        // formato antigo (compatibilidade com backups feitos antes desta atualização)
+                                        clients = Array.isArray(data.clients)
+                                            ? data.clients
+                                            : [];
+                                        nextId =
+                                            typeof data.nextId === "number"
+                                                ? data.nextId
+                                                : 1;
+                                        history = Array.isArray(data.history)
+                                            ? data.history
+                                            : [];
+                                    }
+
+                                    saveData();
+                                    render();
+                                    window.alert(
+                                        "Backup importado com sucesso!",
+                                    );
+                                } catch (err) {
+                                    window.alert(
+                                        "Não consegui processar esse backup. Confira se é um arquivo válido.",
+                                    );
+                                }
+                            },
+                        );
                     };
                     reader.readAsText(file);
                     backupFileInput.value = "";
