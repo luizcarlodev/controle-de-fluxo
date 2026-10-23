@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: "Nunito", sans-serif;
+    padding-bottom: 40px;
+}
+h1,
+h2,
+h3 {
+    font-family: "Baloo 2", cursive;
+}
+.script {
+    font-family: "Pacifico", cursive;
+}
+.mono {
+    font-family: "JetBrains Mono", monospace;
+}

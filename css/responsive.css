@@ -1,0 +1,48 @@
+@media (max-width: 640px) {
+    .plan-row-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .pin-grid {
+        grid-template-columns: 1fr;
+    }
+    .config-actions .config-btn {
+        flex: 1 1 100%;
+    }
+    header {
+        padding-top: 64px; /* espaço pro botão ☰ */
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .client-card {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+    }
+    .timer-wrap {
+        grid-column: 1/-1;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .melt-bar {
+        margin: 0;
+    }
+    .card-actions {
+        grid-column: 1/-1;
+        flex-direction: row;
+    }
+    .card-actions .btn-pay {
+        flex: 1;
+        padding: 10px 12px;
+    }
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .summary-grid .summary-item.total {
+        grid-column: 1/-1;
+    }
+    header h1 {
+        font-size: 2rem;
+    }
+}
